@@ -1,0 +1,13 @@
+<!-- By IsmaDev
+Create from 25/01/2024 -->
+
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="estate_property_menu_root" name="Immobilier">
+            <menuitem id="estate_property_first_level_menu" name="Liste">
+                <menuitem id="estate_property_menu_action" action="estate_property_action"/>
+            </menuitem>
+        </menuitem>    
+</data>
+</odoo>

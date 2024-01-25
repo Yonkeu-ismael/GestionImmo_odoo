@@ -11,6 +11,8 @@
                 <field name="expected_price" string="Prix attendu"/>
                 <field name="selling_price" string="Prix de vente"/>
                 <field name="status" string="Statut"/>
+                <field name="salesman"/>
+                <field name="buyer"/>
 
             </search>
         </field>
@@ -77,6 +79,12 @@
                                 </group>
 
                             </page>
+                            <page string="Autres infos">
+                                <group>
+                                    <field name="salesman"/>
+                                    <field name="buyer"/>
+                                </group>
+                            </page>
                         </notebook>
                     </group>
                 </sheet>
@@ -95,6 +103,8 @@
                 <field name="expected_price"/>
                 <field name="selling_price"/>
                 <field name="date_availability"/>
+                <field name="salesman"/>
+                <field name="buyer"/>
 
             </tree>
         </field>

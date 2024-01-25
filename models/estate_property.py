@@ -18,7 +18,7 @@ class Estate(models.Model):
                                     default=lambda self: (datetime.today() + timedelta(days=90)).strftime('%Y-%m-%d'),copy=False)
     expected_price = fields.Float('Prix attendu',required=True)
     #Le prix de vente ne doit pas être copié lors de la duplication d'un enregistrement et est en lecture seul
-    selling_price = fields.Float('Prix de vente',required=True, readonly=True,copy=False)
+    selling_price = fields.Float('Prix de vente',required=True,copy=False)
     bedrooms = fields.Integer('Chambres',default=2)
     living_area = fields.Integer('Salon')
     facades = fields.Integer('Façades')
@@ -36,3 +36,4 @@ class Estate(models.Model):
         ('sold', 'Vendue'),
         ('cancelled', 'Annulée'),
     ], string='Statut', default='new', required=True , copy=False)
+    property_type_id = fields.Many2one("estate_property_type", string="Type propriété")

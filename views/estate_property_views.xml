@@ -53,6 +53,7 @@
                         <!-- <group col="2"> -->
                             <group>
                                 <field name="postcode"/>
+                                <field name="property_type_id"/>
                                 <field name="date_availability"/>
                             </group>
                             <group>
@@ -99,7 +100,7 @@
         </field>
     </record>    
     <record id="estate_property_action" model="ir.actions.act_window">
-        <field name="name">Propriété immobilière</field>
+        <field name="name">Propriété</field>
         <field name="res_model">estate_property</field>
         <field name="view_mode">tree,form</field>
     </record>

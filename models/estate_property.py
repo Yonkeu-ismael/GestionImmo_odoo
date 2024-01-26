@@ -48,18 +48,21 @@ class Estate(models.Model):
     def _compute_total_area(self):
         for record in self:
             record.total_area = record.living_area + record.garden_area
+    #Ici nous avons ajouté un décorateur @api.onchange pour les champs 'living_area', 'garden_area'.        
+    #Lorsqu'on modifie la valeur de ces 2 champs, la methode _onchange_area est déclenchée pour calculer le total_area
     @api.onchange('living_area', 'garden_area')
     def _onchange_area(self):
         self.total_area = self.living_area + self.garden_area 
+    #La méthode _compute_best_price retourne à chaque fois la meilleure offre et s'il n'y a pas d'offre il renvois 0
     @api.depends("offer_ids.price")
     def _compute_best_price(self):
-
         for line in self:
                 prices = line.offer_ids.mapped('price')
                 if prices:
                     line.best_price = max(prices)
                 else:
-                    line.best_price = 0.0    
+                    line.best_price = 0.0   
+    #Cette méthode se déclanche à chaque fois que offer_ids change, il compare les prix et affecte le max à best_price                
     @api.onchange("offer_ids.price")
     def _onchange_area(self):
         for line in self:
@@ -68,3 +71,16 @@ class Estate(models.Model):
                     line.best_price = max(prices)
                 else:
                     line.best_price = 0.0    
+    #Ici nous avons ajouté un décorateur @api.onchange pour le champ garden. 
+    #Lorsque la valeur du champ jardin change, la méthode _onchange_garden() est déclenchée.
+    #Si garden est défini sur True, la méthode _onchange_garden() définit la garden_area sur 10 
+    #et l'orientation sur "nord". Si garden est défini sur False, 
+    #les champs garden_area et garden_orientation sont effacés en les définissant sur False.   
+    @api.onchange('garden')
+    def _onchange_garden(self):
+        if self.garden:
+            self.garden_area = 10
+            self.garden_orientation = 'North'
+        else:
+            self.garden_area = False
+            self.garden_orientation = False

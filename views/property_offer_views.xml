@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<odoo>
+
+    <record model="ir.ui.view" id="view_property_offer_search">
+        <field name="name">estate_property_offer.search</field>
+        <field name="model">estate_property_offer</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="price" string="Prix"/>
+                <field name="status" string="Statut"/>
+                <field name="partner_id"/>
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_property_offer_form">
+        <field name="name">estate_property_offer.form</field>
+        <field name="model">estate_property_offer</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="price" />
+                        <field name="status"/>
+                        <field name="partner_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_property_offer_tree">
+        <field name="name">estate_property_offer.tree</field>
+        <field name="model">estate_property_offer</field>
+        <field name="arch" type="xml">
+            <tree >
+                <field name="price"/>
+                <field name="status"/>
+                <field name="partner_id"/>
+            </tree>
+        </field>
+    </record>    
+    <!-- <record id="property_tag_action" model="ir.actions.act_window">
+        <field name="name">Etiquette Propriété</field>
+        <field name="res_model">estate_property_tag</field>
+        <field name="view_mode">tree,form</field>
+    </record> -->
+</odoo>

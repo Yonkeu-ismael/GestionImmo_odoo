@@ -54,7 +54,7 @@
                     <group>
                         <field name="tag_ids" widget="many2many_tags"/>
                     </group>
-                    <group>
+                    
                         <!-- <group col="2"> -->
                             <group>
                                 <field name="postcode"/>
@@ -82,6 +82,11 @@
                                 </group>
 
                             </page>
+                            <page string="Offres">
+                                <tree>
+                                    <field name="offer_ids"/>
+                                </tree>
+                            </page>
                             <page string="Autres infos">
                                 <group>
                                     <field name="salesman"/>
@@ -89,7 +94,7 @@
                                 </group>
                             </page>
                         </notebook>
-                    </group>
+                    
                 </sheet>
             </form>
         </field>

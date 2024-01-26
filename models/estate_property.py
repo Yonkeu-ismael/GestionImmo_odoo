@@ -3,7 +3,7 @@
 # -*- coding:utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import datetime, timedelta
-from odoo import fields, models
+from odoo import api,fields, models
 
 class Estate(models.Model):
     _name = "estate_property"
@@ -20,11 +20,11 @@ class Estate(models.Model):
     #Le prix de vente ne doit pas être copié lors de la duplication d'un enregistrement et est en lecture seul
     selling_price = fields.Float('Prix de vente',required=True,copy=False)
     bedrooms = fields.Integer('Chambres',default=2)
-    living_area = fields.Integer('Salon')
+    living_area = fields.Integer('Surface habitable(m2)')
     facades = fields.Integer('Façades')
     garage = fields.Boolean('Garage', default=False)
     garden = fields.Boolean('Jardin', default=False)
-    garden_area = fields.Integer('Zone du jardin')
+    garden_area = fields.Integer('Surface du jardin(m2)')
     garden_orientation = fields.Selection( 
         string='Orientation du jardin',
         selection=[('North', 'Nord'), ('South', 'Sud'), ('East', 'Est'), ('West', 'Ouest')])
@@ -41,4 +41,12 @@ class Estate(models.Model):
     buyer = fields.Many2one('res.partner', string='Achéteur', index=True, default=lambda self: self.env.company.partner_id.id)
     tag_ids = fields.Many2many("estate_property_tag" , string="Etiquette" )
     offer_ids = fields.One2many("estate_property_offer" , "property_id", string="Offre")
-    
+    total_area = fields.Float('Superficie totale', compute='_compute_total_area', store=True, help="La superficie totale est la somme de la Surface du jardin(m2) et la Surface habitable(m2) ")
+
+    @api.depends('living_area','garden_area')
+    def _compute_total_area(self):
+        for record in self:
+            record.total_area = record.living_area + record.garden_area
+    @api.onchange('living_area', 'garden_area')
+    def _onchange_area(self):
+        self.total_area = self.living_area + self.garden_area    

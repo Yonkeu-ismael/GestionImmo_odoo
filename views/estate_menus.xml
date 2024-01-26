@@ -5,7 +5,7 @@ Create from 25/01/2024 -->
 
 <odoo>
     <data>
-        <menuitem id="estate_property_menu_root" name="Immobilier" sequence="3"/>
+        <menuitem id="estate_property_menu_root" name="Immobilier" sequence="5"/>
         <!-- menu Publicité -->
         <menuitem 
             id="estate_property_first_level_menu" 
@@ -23,11 +23,18 @@ Create from 25/01/2024 -->
             name="Setting" 
             parent="estate_property_menu_root"  
             sequence="2"/>
+
         <menuitem 
             id="property_type_menu_action" 
             action="property_type_action" 
             parent="property_type_first_level_menu" 
             sequence="2"/>
+
+        <menuitem 
+            id="property_tag_menu_action" 
+            action="property_tag_action" 
+            parent="property_type_first_level_menu" 
+            sequence="3"/>
         <!--fin menu Setting -->
         
         

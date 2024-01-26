@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<odoo>
+
+    <record model="ir.ui.view" id="view_property_tag_search">
+        <field name="name">estate_property_tag.search</field>
+        <field name="model">estate_property_tag</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Etiquette Propriété"/>
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_property_tag_form">
+        <field name="name">estate_property_tag.form</field>
+        <field name="model">estate_property_tag</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="name"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_property_typ_tree">
+        <field name="name">estate_property_tag.tree</field>
+        <field name="model">estate_property_tag</field>
+        <field name="arch" type="xml">
+            <tree >
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>    
+    <record id="property_tag_action" model="ir.actions.act_window">
+        <field name="name">Etiquette Propriété</field>
+        <field name="res_model">estate_property_tag</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

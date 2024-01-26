@@ -3,7 +3,7 @@
 # -*- coding:utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import datetime, timedelta
-from odoo import api,fields, models
+from odoo import api,fields, models,exceptions
 
 class Estate(models.Model):
     _name = "estate_property"
@@ -18,7 +18,7 @@ class Estate(models.Model):
                                     default=lambda self: (datetime.today() + timedelta(days=90)).strftime('%Y-%m-%d'),copy=False)
     expected_price = fields.Float('Prix attendu',required=True)
     #Le prix de vente ne doit pas être copié lors de la duplication d'un enregistrement et est en lecture seul
-    selling_price = fields.Float('Prix de vente',required=True,copy=False)
+    selling_price = fields.Float('Prix de vente',required=True,copy=False,readonly=True)
     bedrooms = fields.Integer('Chambres',default=2)
     living_area = fields.Integer('Surface habitable(m2)')
     facades = fields.Integer('Façades')
@@ -84,3 +84,16 @@ class Estate(models.Model):
         else:
             self.garden_area = False
             self.garden_orientation = False
+
+    is_sold = fields.Boolean('Vendu', default=False)
+    is_cancelled = fields.Boolean('Annulé', default=False)
+
+    def cancel_property(self):
+        if self.is_sold:
+            raise exceptions.UserError("Une propriété vendue ne peut pas être annulée.")
+        self.is_cancelled = True
+        self.message_post(body='Annulé !!!')
+    def sell_property(self):
+        if self.is_cancelled:
+            raise exceptions.UserError("Une propriété annulée ne peut pas être vendue.")
+        self.is_sold = True

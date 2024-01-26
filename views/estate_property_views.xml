@@ -49,59 +49,62 @@
                 </sheet>
             </form> -->
             <form>
+                <header>
+                    <button name="cancel_property" string="Annuler" type="object" class="oe_highlight"/>
+                    <button name="sell_property" string="Vendu" type="object" class="oe_highlight"/>
+                </header>                
                 <sheet>
+                <!-- champs du formulaire -->
                     <h1><field name="name"/></h1>
                     <group>
                         <field name="tag_ids" widget="many2many_tags"/>
                     </group>
-                    
-                       <group col="2">
-                            <group>
-                                <field name="postcode"/>
-                                <field name="property_type_id"/>
-                                <field name="date_availability"/>
-                            </group>
-                            <group>
-                                <field name="expected_price"/>
-                                <field name="selling_price"/>
-                                <field name="best_price"/>
-                                
-                            </group>
+                    <group col="2">
+                        <group>
+                            <field name="postcode"/>
+                            <field name="property_type_id"/>
+                            <field name="date_availability"/>
                         </group>
-                        <notebook>
-                            <page string="Description">
-                                <group col="2">
-                                    <group>
-                                        <field name="description"/>
-                                        <field name="bedrooms"/>
-                                        <field name="facades"/>
-                                        <field name="garden"/>
-                                        <field name="garage"/>
-                                        <field name="garden_orientation"/>
-                                    </group>
-                                    <group>
-                                        <field name="active"/>
-                                        <field name="status"/>
-                                        <field name="living_area"/>
-                                        <field name="garden_area"/>
-                                        <field name="total_area"/>
-                                    </group>
-                                </group>
-
-                            </page>
-                            <page string="Offres">
-                                <tree>
-                                    <field name="offer_ids"/>
-                                </tree>
-                            </page>
-                            <page string="Autres infos">
+                        <group>
+                            <field name="expected_price"/>
+                            <field name="selling_price"/>
+                            <field name="best_price"/>
+                            
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <group col="2">
                                 <group>
-                                    <field name="salesman"/>
-                                    <field name="buyer"/>
+                                    <field name="description"/>
+                                    <field name="bedrooms"/>
+                                    <field name="facades"/>
+                                    <field name="garden"/>
+                                    <field name="garage"/>
+                                    <field name="garden_orientation"/>
                                 </group>
-                            </page>
-                        </notebook>
-                    
+                                <group>
+                                    <field name="active"/>
+                                    <field name="status"/>
+                                    <field name="living_area"/>
+                                    <field name="garden_area"/>
+                                    <field name="total_area"/>
+                                </group>
+                            </group>
+
+                        </page>
+                        <page string="Offres">
+                            <tree>
+                                <field name="offer_ids"/>
+                            </tree>
+                        </page>
+                        <page string="Autres infos">
+                            <group>
+                                <field name="salesman"/>
+                                <field name="buyer"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

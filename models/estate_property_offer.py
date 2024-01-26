@@ -48,3 +48,25 @@ class Offer(models.Model):
                 record.create_date = record.date_deadline - timedelta(days=record.validity)
             else:
                 record.create_date = False
+
+
+    state = fields.Selection([
+        ('draft', 'Brouillon'),
+        ('accepted', 'Accepté'),
+        ('rejected', 'Refusé')
+    ], 'État', default='draft')
+
+    #Lorsque la méthode accept_offer() est appelée et que l'offre est acceptée, nous mettons à jour le champ state pour le passer à 'accepted'. 
+    #Ensuite, nous affectons la valeur de buyer et sale_price du modèle estate.property.offer aux champs correspondants buyer et sale_price 
+    #du modèle estate.property. property_id est un champ relationnel entre estate.property.offer et estate.property qui relie l'offre à la propriété correspondante.    
+    def accept_offer(self):
+        self.state = 'accepted'
+        # self.property_id.buyer = self.buyer
+        # self.property_id.selling_price = self.selling_price
+        self.property_id.write({
+                    # 'buyer': self.property_id.buyer.id or self.buyer.id,
+                    'buyer': self.partner_id.id,
+                    'selling_price': self.price                
+                })
+    def reject_offer(self):
+        self.state = 'rejected'

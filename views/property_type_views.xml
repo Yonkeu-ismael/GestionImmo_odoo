@@ -41,6 +41,8 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="property_ids" widget="one2many_types" options="{'color_field': 'color'}"/>
+                <!-- <field name="offer_ids" widget="one2many" /> -->
+                <!-- <field name="offer_count"/> -->
             </tree>
         </field>
     </record>    

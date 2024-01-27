@@ -24,7 +24,7 @@
                         <field name="partner_id"/>
                         <field name="validity"/>
                         <field name="date_deadline"/>
-                        <field name="status"/>
+                        <!-- <field name="status"/> -->
                     </group>
                 </sheet>
             </form>
@@ -34,13 +34,14 @@
         <field name="name">estate_property_offer.tree</field>
         <field name="model">estate_property_offer</field>
         <field name="arch" type="xml">
+            <!-- <tree default_order="price desc"> -->
             <tree >
                 <field name="price"/>
                 <field name="partner_id"/>
                 <field name="validity"/>
                 <field name="date_deadline"/>
-                <button name="accept_offer" type="object" icon="fa-check"/>
-                <button name="reject_offer" type="object" icon="fa-times"/>
+                <button name="accept_offer" type="object" icon="fa-check" attrs="{'invisible': [('status', 'in', ['accepted', 'refused'])]}"/>
+                <button name="reject_offer" type="object" icon="fa-times" attrs="{'invisible': [('status', 'in', ['accepted', 'refused'])]}"/>
                 <field name="status"/>
             </tree>
         </field>

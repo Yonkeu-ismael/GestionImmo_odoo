@@ -3,11 +3,13 @@
 # -*- coding:utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import datetime, timedelta
-from odoo import api,fields, models,exceptions
+from odoo import api,fields, models,exceptions,tools
+from odoo.exceptions import ValidationError
 
 class Estate(models.Model):
     _name = "estate_property"
     _description = 'Propriété immobilière'
+    _order = "id desc"
 
     name = fields.Char('Titre', required=True, translate=True)
     description = fields.Text('Description', translate=True)
@@ -18,7 +20,7 @@ class Estate(models.Model):
                                     default=lambda self: (datetime.today() + timedelta(days=90)).strftime('%Y-%m-%d'),copy=False)
     expected_price = fields.Float('Prix attendu',required=True)
     #Le prix de vente ne doit pas être copié lors de la duplication d'un enregistrement et est en lecture seul
-    selling_price = fields.Float('Prix de vente',required=True,copy=False,readonly=True)
+    selling_price = fields.Float('Prix de vente',copy=False,readonly=True)
     bedrooms = fields.Integer('Chambres',default=2)
     living_area = fields.Integer('Surface habitable(m2)')
     facades = fields.Integer('Façades')
@@ -29,20 +31,20 @@ class Estate(models.Model):
         string='Orientation du jardin',
         selection=[('North', 'Nord'), ('South', 'Sud'), ('East', 'Est'), ('West', 'Ouest')])
     active = fields.Boolean('Actif', default=True)
-    status = fields.Selection([
+    state = fields.Selection([
         ('new', 'Nouveau'),
         ('offer_received', 'Offre reçue'),
         ('offer_accepted', 'Offre acceptée'),
         ('sold', 'Vendue'),
         ('cancelled', 'Annulée'),
-    ], string='Statut', default='new', required=True , copy=False)
+    ], string='Statut', default='new', readonly=True,required=True, copy=False)
     property_type_id = fields.Many2one("estate_property_type", string="Type propriété")
     salesman = fields.Many2one('res.users', string='Vendeur', index=True, default=lambda self: self.env.user.id)
     buyer = fields.Many2one('res.partner', string='Achéteur', index=True, default=lambda self: self.env.company.partner_id.id)
     tag_ids = fields.Many2many("estate_property_tag" , string="Etiquette" )
     offer_ids = fields.One2many("estate_property_offer" , "property_id", string="Offre")
     total_area = fields.Float('Superficie totale', compute='_compute_total_area', store=True, help="La superficie totale est la somme de la Surface du jardin(m2) et la Surface habitable(m2) ")
-    best_price = fields.Float('Meilleur offre', compute='_compute_best_price', store=True)
+    best_price = fields.Float('Meilleur offre', compute='_compute_best_price',readonly=True, store=True)
     
     @api.depends('living_area','garden_area')
     def _compute_total_area(self):
@@ -90,10 +92,25 @@ class Estate(models.Model):
 
     def cancel_property(self):
         if self.is_sold:
-            raise exceptions.UserError("Une propriété vendue ne peut pas être annulée.")
-        self.is_cancelled = True
-        self.message_post(body='Annulé !!!')
+            raise exceptions.UserError("Une propriété vendue ne peut pas être annulée !!!")
+        # self.is_cancelled = True
+        self.state = 'cancelled'
     def sell_property(self):
         if self.is_cancelled:
-            raise exceptions.UserError("Une propriété annulée ne peut pas être vendue.")
-        self.is_sold = True
+            raise exceptions.UserError("Une propriété annulée ne peut pas être vendue !!!")
+        # self.is_sold = True
+        self.state = 'sold'
+#Ajout des contraintes sur les champs, les montant doivent être positif
+#ref https://www.postgresql.org/docs/12/ddl-constraints.html#DDL-CONSTRAINTS-UNIQUE-CONSTRAINTS
+    _sql_constraints = [
+        ('check_expected_price', 'CHECK(expected_price >= 0)',
+         'Le prix de vente doit être strictement positif !'),
+        ]
+
+   #Ajout du contrainte python pour que le prix de vente ne puisse pas être inférieur à 90% du prix attendu.         
+    @api.constrains('selling_price')
+    def _check_selling_price(self):
+        for record in self:
+            if not tools.float_is_zero(record.selling_price, precision_digits=2) and \
+                    tools.float_compare(record.selling_price, record.expected_price * 0.9, precision_digits=2) == -1:
+                raise exceptions.ValidationError("Le prix de vente ne peut pas être inférieur à 90% du prix attendu !!!")

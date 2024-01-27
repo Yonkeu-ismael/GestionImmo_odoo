@@ -8,6 +8,7 @@ from datetime import timedelta
 class Offer(models.Model):
     _name = "estate_property_offer"
     _description = 'Offre'
+    _order = "price desc"
 
     price = fields.Float('Prix', required=True)
     validity = fields.Integer('Validité(jour)', default="7")
@@ -16,7 +17,7 @@ class Offer(models.Model):
     status = fields.Selection([
         ('accepted', 'Accepté'),
         ('refused', 'Refusé'),
-    ], string='Statut', default='accepted', required=True , copy=False)
+    ], string='Statut', copy=False)
     property_id = fields.Many2one('estate_property', string='Propriété' ,required=True, index=True)
     partner_id = fields.Many2one('res.partner', string='Achéteur' ,required=True, index=True)
     # partner_id = fields.Many2one('res.partner', string='Achéteur' ,required=True, index=True, default=lambda self: self.env.company.partner_id.id)
@@ -50,23 +51,32 @@ class Offer(models.Model):
                 record.create_date = False
 
 
-    state = fields.Selection([
-        ('draft', 'Brouillon'),
-        ('accepted', 'Accepté'),
-        ('rejected', 'Refusé')
-    ], 'État', default='draft')
+    # state = fields.Selection([
+    #     ('draft', 'Brouillon'),
+    #     ('accepted', 'Accepté'),
+    #     ('rejected', 'Refusé')
+    # ], 'État', default='draft')
 
     #Lorsque la méthode accept_offer() est appelée et que l'offre est acceptée, nous mettons à jour le champ state pour le passer à 'accepted'. 
     #Ensuite, nous affectons la valeur de buyer et sale_price du modèle estate.property.offer aux champs correspondants buyer et sale_price 
     #du modèle estate.property. property_id est un champ relationnel entre estate.property.offer et estate.property qui relie l'offre à la propriété correspondante.    
     def accept_offer(self):
-        self.state = 'accepted'
-        # self.property_id.buyer = self.buyer
-        # self.property_id.selling_price = self.selling_price
+        self.status = 'accepted'
         self.property_id.write({
-                    # 'buyer': self.property_id.buyer.id or self.buyer.id,
                     'buyer': self.partner_id.id,
-                    'selling_price': self.price                
+                    # 'state': self.property_id.id,
+                    'selling_price': self.price, 
+                    'state': 'offer_accepted'               
                 })
     def reject_offer(self):
-        self.state = 'rejected'
+        # self.state = 'rejected'
+        # 'state': self.property_id.id
+        self.status = 'rejected'
+        # self.property_id.write({
+        #         'state': 'offer_rejected'
+        #     })
+#Ajout des contraintes sur les champs, les montant doivent être positif
+    _sql_constraints = [
+        ('check_price', 'CHECK(price >= 0)',
+         "Le prix de l'offre doivent être strictement positifs!"),
+        ]

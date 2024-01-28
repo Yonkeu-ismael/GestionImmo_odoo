@@ -96,7 +96,7 @@
 
                             </page>
                             <page string="Offres" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled'))]}"> 
-                                <tree editable="top" decoration-danger="state == 'rejected'" decoration-success="state == 'accepted'">
+                                <tree>
                                     <field name="offer_ids"/>
                                 </tree>
                             </page>
@@ -125,8 +125,10 @@
                     <field name="living_area"/>
                     <field name="expected_price"/>
                     <field name="selling_price"/>
-                    <field name="date_availability" attrs="{'invisible': True}"/>
-                    <field name="state" invisible="1" />
+                    <field name="date_availability" optional="hide"/>
+                    <field name="buyer" optional="hide"/>
+                    <field name="salesman" optional="hide"/>
+                    <field name="state" optional="hide"/>
                 </tree>
             </field>
         </record>    

@@ -50,13 +50,6 @@ class Offer(models.Model):
             else:
                 record.create_date = False
 
-
-    # state = fields.Selection([
-    #     ('draft', 'Brouillon'),
-    #     ('accepted', 'Accepté'),
-    #     ('rejected', 'Refusé')
-    # ], 'État', default='draft')
-
     #Lorsque la méthode accept_offer() est appelée et que l'offre est acceptée, nous mettons à jour le champ state pour le passer à 'accepted'. 
     #Ensuite, nous affectons la valeur de buyer et sale_price du modèle estate.property.offer aux champs correspondants buyer et sale_price 
     #du modèle estate.property. property_id est un champ relationnel entre estate.property.offer et estate.property qui relie l'offre à la propriété correspondante.    
@@ -64,18 +57,12 @@ class Offer(models.Model):
         self.status = 'accepted'
         self.property_id.write({
                     'buyer': self.partner_id.id,
-                    # 'state': self.property_id.id,
                     'selling_price': self.price, 
                     'state': 'offer_accepted'               
                 })
     def reject_offer(self):
-        # self.state = 'rejected'
-        # 'state': self.property_id.id
-        self.status = 'rejected'
-        # self.property_id.write({
-        #         'state': 'offer_rejected'
-        #     })
-#Ajout des contraintes sur les champs, les montant doivent être positif
+        self.status = 'refused'
+    #Ajout des contraintes sur les champs, les montant doivent être positif
     _sql_constraints = [
         ('check_price', 'CHECK(price >= 0)',
          "Le prix de l'offre doivent être strictement positifs!"),

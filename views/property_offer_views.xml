@@ -7,7 +7,7 @@
         <field name="model">estate_property_offer</field>
         <field name="arch" type="xml">
             <search>
-                <field name="living_area" filter_domain="[('living_area', '>', search)]"/>
+                <!-- <field name="living_area" filter_domain="[('living_area', '>', search)]"/> -->
                 <field name="status" string="Statut"/>
                 <field name="partner_id"/>
                 

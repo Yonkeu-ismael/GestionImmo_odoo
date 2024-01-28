@@ -7,13 +7,10 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="name" string="Nom"/>
-                    <field name="postcode" string="Code postal"/>
-                    <field name="date_availability" string="Date de disponibilité"/>
-                    <field name="expected_price" string="Prix attendu"/>
-                    <field name="selling_price" string="Prix de vente"/>
-                    <field name="state" string="Statut"/>
-                    <field name="salesman"/>
-                    <field name="buyer"/>
+                    <field name="date_availability"/>
+                    <field name="selling_price"/>
+                    <field name="living_area" filter_domain="[('living_area', '&gt;=', self)]"/>
+                    
 
                 </search>
             </field>

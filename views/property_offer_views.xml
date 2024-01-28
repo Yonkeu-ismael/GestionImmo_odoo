@@ -36,20 +36,26 @@
         <field name="model">estate_property_offer</field>
         <field name="arch" type="xml">
             <!-- <tree default_order="price desc"> -->
-            <tree editable="top" decoration-success="status=='accepted'" decoration-danger="status=='refused'">
-                <field name="price"/>
-                <field name="partner_id"/>
-                <field name="validity"/>
-                <field name="date_deadline"/>
+            <tree editable="top" 
+                decoration-success="status=='accepted'" 
+                decoration-danger="status=='refused'"
+                >
+                <field name="price" attrs="{'readonly': [('status', 'in', ('accepted', 'refused'))]}"/>
+                <field name="partner_id" attrs="{'readonly': [('status', 'in', ('accepted', 'refused'))]}"/>
+                <field name="validity" attrs="{'readonly': [('status', 'in', ('accepted', 'refused'))]}"/>
+                <field name="date_deadline" attrs="{'readonly': [('status', 'in', ('accepted', 'refused'))]}"/>
                 <button name="accept_offer" type="object" icon="fa-check" attrs="{'invisible': [('status', 'in', ['accepted', 'refused'])]}"/>
                 <button name="reject_offer" type="object" icon="fa-times" attrs="{'invisible': [('status', 'in', ['accepted', 'refused'])]}"/>
                 <field name="status" invisible="1" attrs="{'invisible': [('status', 'in', ['accepted', 'refused'])]}"/>
+                <!-- <field name="property_type_id"/> -->
+            
             </tree>
         </field>
     </record>    
-    <!-- <record id="property_tag_action" model="ir.actions.act_window">
-        <field name="name">Etiquette Propriété</field>
-        <field name="res_model">estate_property_tag</field>
+    <record id="property_offer_action" model="ir.actions.act_window">
+        <field name="name">Offres</field>
+        <field name="res_model">estate_property_offer</field>
         <field name="view_mode">tree,form</field>
-    </record> -->
+        <field name="domain">[('property_type_id', '=', active_id)]</field>
+    </record>
 </odoo>

@@ -16,9 +16,16 @@
         <field name="model">estate_property_type</field>
         <field name="arch" type="xml">
             <form>
-                <sheet>
-                    <h1><field name="name"/></h1>
-                    <notebook>
+                <sheet> 
+                    <div class="oe_button_box" name="button_box" >
+                        <button class="oe_stat_button" name="%(property_offer_action)d" icon="fa-money"  type="action" >
+                            <field string="Offres" name="offer_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">                
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <notebook>  
                         <page string="Propriétés">
                             <field name="property_ids">
                                 <tree>
@@ -38,11 +45,10 @@
         <field name="model">estate_property_type</field>
         <field name="arch" type="xml">
             <tree >
+
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="property_ids" widget="one2many_types" options="{'color_field': 'color'}"/>
-                <!-- <field name="offer_ids" widget="one2many" /> -->
-                <!-- <field name="offer_count"/> -->
             </tree>
         </field>
     </record>    

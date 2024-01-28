@@ -3,7 +3,6 @@
 # -*- coding:utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import api, fields, models
-from datetime import timedelta
 
 class Offer(models.Model):
     _name = "estate_property_offer"
@@ -21,7 +20,8 @@ class Offer(models.Model):
     property_id = fields.Many2one('estate_property', string='Propriété' ,required=True, index=True)
     partner_id = fields.Many2one('res.partner', string='Achéteur' ,required=True, index=True)
     # partner_id = fields.Many2one('res.partner', string='Achéteur' ,required=True, index=True, default=lambda self: self.env.company.partner_id.id)
-
+    property_type_id = fields.Many2one('estate_property_type', string='Type Propriété', related='property_id.property_type_id', store=True)
+   
     @api.model
     def default_get(self, fields):
         defaults = super(Offer, self).default_get(fields)

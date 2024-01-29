@@ -19,36 +19,9 @@
             <field name="name">estate_property.form</field>
             <field name="model">estate_property</field>
             <field name="arch" type="xml">
-                <!-- <form>
-                    <sheet>
-                        <group>
-                            <field name="name"/>
-                            <field name="description"/>
-                        </group>
-                        <group col="2">
-                            <group>
-                                <field name="postcode"/>
-                                <field name="expected_price"/>
-                                <field name="bedrooms"/>
-                                <field name="facades"/>
-                                <field name="garden"/>
-                                <field name="garden_orientation"/>
-                                <field name="active"/>
-                            </group>
-                            <group>
-                                <field name="date_availability"/>
-                                <field name="selling_price"/>
-                                <field name="living_area"/>
-                                <field name="garage"/>
-                                <field name="garden_area"/>
-                                <field name="state"/>
-                            </group>
-                        </group>
-                    </sheet>
-                </form> -->
                 <form>
                     <header>
-                        <field name="state" widget="statusbar" statusbar_visible="new,offer_received,offer_accepted,sold"/>
+                        <field name="state" widget="statusbar" statusbar_visible="new,offer_received,offer_accepted,sold" readonly="0"/>
                         <button name="sell_property" string="Vendue" type="object" class="oe_highlight" states="offer_accepted"/>
                         <button name="sell_property" string="Vendue" type="object" class="btn-secondary" states="new, offer_received"/>
                         <button name="cancel_property" string="Annuler" type="object" class="btn-secondary" states="new,offer_received,offer_accepted" />
@@ -92,14 +65,14 @@
                                 </group>
 
                             </page>
-                            <page string="Offres" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled'))]}"> 
+                            <page string="Offres" > 
                                 <tree>
-                                    <field name="offer_ids"/>
+                                    <field name="offer_ids" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled'))]}"/>
                                 </tree>
                             </page>
                             <page string="Autres infos">
                                 <group>
-                                    <field name="salesman"/>
+                                    <field name="salesman_id"/>
                                     <field name="buyer"/>
                                 </group>
                             </page>
@@ -124,7 +97,7 @@
                     <field name="selling_price"/>
                     <field name="date_availability" optional="hide"/>
                     <field name="buyer" optional="hide"/>
-                    <field name="salesman" optional="hide"/>
+                    <field name="salesman_id" optional="hide"/>
                     <field name="state" optional="hide"/>
                 </tree>
             </field>

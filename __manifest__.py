@@ -19,6 +19,7 @@
         'views/property_tag_views.xml',
         'views/property_offer_views.xml',
         'views/estate_property_views.xml',
+        'views/inherited_res_users_view.xml',
         'views/estate_menus.xml',
 
 

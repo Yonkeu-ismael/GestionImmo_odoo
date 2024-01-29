@@ -37,15 +37,16 @@ class Estate(models.Model):
         ('offer_accepted', 'Offre acceptée'),
         ('sold', 'Vendue'),
         ('cancelled', 'Annulée'),
-    ], string='Etat', default='new', readonly=True,required=True, copy=False)
+    ], string='Etat', default='new',required=True, copy=False)
     property_type_id = fields.Many2one("estate_property_type", string="Type propriété")
-    salesman = fields.Many2one('res.users', string='Vendeur', index=True, default=lambda self: self.env.user.id)
+    salesman_id = fields.Many2one('res.users', string='Vendeur', index=True, default=lambda self: self.env.user.id)
     buyer = fields.Many2one('res.partner', string='Achéteur', index=True, default=lambda self: self.env.company.partner_id.id)
     tag_ids = fields.Many2many("estate_property_tag" , string="Etiquette" )
-    offer_ids = fields.One2many("estate_property_offer" , "property_id", string="Offre")
+    offer_ids = fields.One2many("estate_property_offer" , "property_id",ondelete="cascade", string="Offre")
     total_area = fields.Float('Superficie totale', compute='_compute_total_area', store=True, help="La superficie totale est la somme de la Surface du jardin(m2) et la Surface habitable(m2) ")
     best_price = fields.Float('Meilleur offre', compute='_compute_best_price',readonly=True, store=True)
-    
+    show_reset_to_draft_button = fields.Boolean(compute='_compute_show_reset_to_draft_button')
+
     @api.depends('living_area','garden_area')
     def _compute_total_area(self):
         for record in self:
@@ -114,3 +115,13 @@ class Estate(models.Model):
             if not tools.float_is_zero(record.selling_price, precision_digits=2) and \
                     tools.float_compare(record.selling_price, record.expected_price * 0.9, precision_digits=2) == -1:
                 raise exceptions.ValidationError("Le prix de vente ne peut pas être inférieur à 90% du prix attendu !!!")
+    
+    #Empêcher la suppression d'une propriété si son état n'est pas « new » ou « cancelled »        
+    def _check_state_deletion(self):
+        for record in self:
+            if record.state not in ('new', 'cancelled'):
+                raise exceptions.UserError("Vous ne pouvez pas supprimer une propriété dont l'état n'est pas Nouveau ou Annulé.")
+    
+    def unlink(self):
+        self._check_state_deletion()
+        return super(Estate, self).unlink()

@@ -2,7 +2,8 @@
 # Create from 26/01/2024
 # -*- coding:utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import api, fields, models
+from odoo import api, fields, models,exceptions,tools
+from datetime import timedelta
 
 class Offer(models.Model):
     _name = "estate_property_offer"
@@ -17,7 +18,7 @@ class Offer(models.Model):
         ('accepted', 'Accepté'),
         ('refused', 'Refusé'),
     ], string='Statut', copy=False)
-    property_id = fields.Many2one('estate_property', string='Propriété' ,required=True, index=True)
+    property_id = fields.Many2one('estate_property', string='Propriété' ,required=True, index=True,ondelete="cascade")
     partner_id = fields.Many2one('res.partner', string='Achéteur' ,required=True, index=True)
     # partner_id = fields.Many2one('res.partner', string='Achéteur' ,required=True, index=True, default=lambda self: self.env.company.partner_id.id)
     property_type_id = fields.Many2one('estate_property_type', string='Type Propriété', related='property_id.property_type_id', store=True)
@@ -67,3 +68,22 @@ class Offer(models.Model):
         ('check_price', 'CHECK(price >= 0)',
          "Le prix de l'offre doivent être strictement positifs!"),
         ]
+    #Lors de la création d'une offre, la méthode create() est appelée. Elle récupère l'ID de la propriété et le montant de l'offre à partir des valeurs (vals) passées en paramètre.
+    # la méthode vérifie si une propriété et un montant sont présents. Si oui, elle utilise self.env['estate_property'].browse(property_id) pour obtenir l'objet estate_property correspondant à l'ID de la propriété. Ensuite, elle recherche les offres existantes pour cette propriété avec self.search([('property_id', '=', property_id)]).
+    #Si des offres existent et que le montant de l'offre nouvellement créée est inférieur au montant de l'offre existante le plus élevé, une exception ValidationError est levée pour indiquer que le montant de l'offre doit être supérieur ou égal à l'offre existante la plus élevée.
+    #la méthode write() est utilisée pour définir l'état de la propriété sur "Offre reçue" en utilisant property.write({'state': 'offer_received'}).
+    @api.model
+    def create(self, vals):
+        property_id = vals.get('property_id')
+        price = vals.get('price')
+        
+        if property_id and price:
+            property = self.env['estate_property'].browse(property_id)
+            existing_offers = self.search([('property_id', '=', property_id)])
+            
+            if existing_offers and price < max(existing_offers.mapped('price')):
+                raise exceptions.ValidationError("Le montant de l'offre doit être supérieur ou égal à l'offre existante la plus élevée.")
+            
+            property.write({'state': 'offer_received'})
+        
+        return super(Offer, self).create(vals)

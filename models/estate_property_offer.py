@@ -87,3 +87,11 @@ class Offer(models.Model):
             property.write({'state': 'offer_received'})
         
         return super(Offer, self).create(vals)
+    
+    # @api.constrains('price')
+    # def _check_price(self):
+    #     for offer in self:
+    #         property = offer.property_id
+    #         best_offer = self.search([('property_id', '=', property.id), ('state', '=', 'accepted')], order='price desc', limit=1)
+    #         if best_offer and offer.price <= best_offer.price:
+    #             raise exceptions.UserError("Vous ne pouvez pas valider une offre inférieure à la meilleure offre existante.")

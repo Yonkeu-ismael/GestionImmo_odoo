@@ -5,6 +5,7 @@
 from datetime import datetime, timedelta
 from odoo import api,fields, models,exceptions,tools
 from odoo.exceptions import ValidationError
+from lxml import etree
 
 class Estate(models.Model):
     _name = "estate_property"
@@ -37,7 +38,7 @@ class Estate(models.Model):
         ('offer_accepted', 'Offre acceptée'),
         ('sold', 'Vendue'),
         ('cancelled', 'Annulée'),
-    ], string='Etat', default='new',required=True, copy=False)
+    ], string='Etat', tracking=True, default='new',required=True, copy=False)
     property_type_id = fields.Many2one("estate_property_type", string="Type propriété")
     salesman_id = fields.Many2one('res.users', string='Vendeur', index=True, default=lambda self: self.env.user.id)
     buyer = fields.Many2one('res.partner', string='Achéteur', index=True, default=lambda self: self.env.company.partner_id.id)
@@ -91,12 +92,12 @@ class Estate(models.Model):
     is_sold = fields.Boolean('Vendu', default=False)
     is_cancelled = fields.Boolean('Annulé', default=False)
 
-    def cancel_property(self):
+    def action_cancel(self):
         if self.is_sold:
             raise exceptions.UserError("Une propriété vendue ne peut pas être annulée !!!")
         # self.is_cancelled = True
         self.state = 'cancelled'
-    def sell_property(self):
+    def action_sold(self):
         if self.is_cancelled:
             raise exceptions.UserError("Une propriété annulée ne peut pas être vendue !!!")
         # self.is_sold = True
@@ -125,3 +126,13 @@ class Estate(models.Model):
     def unlink(self):
         self._check_state_deletion()
         return super(Estate, self).unlink()
+    
+    # Règle de contrôle d'accès
+    # def write(self, vals):
+    #     if 'state' in vals and vals['state'] not in ('new','offer_received','offer_accepted') :
+    #         raise exceptions.UserError("Vous ne pouvez pas modifier cette propriété")
+    #     return super(Estate, self).write(vals)
+    # @api.onchange('state')
+    # def _onchange_state(self):
+    #     if self.state != 'new':
+    #         raise exceptions.UserError("Vous ne pouvez pas modifier une propriété si son état n'est pas 'Nouveau'.")

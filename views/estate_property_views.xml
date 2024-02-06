@@ -21,16 +21,25 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <field name="state" widget="statusbar" statusbar_visible="new,offer_received,offer_accepted,sold" readonly="0"/>
-                        <button name="action_sold" string="Vendue" type="object" class="oe_highlight" states="offer_accepted"/>
-                        <button name="action_sold" string="Vendue" type="object" class="btn-secondary" states="new, offer_received"/>
+                        <field name="state" widget="statusbar" statusbar_visible="new,offer_received,offer_accepted,sold,rented" readonly="0"/>
+                            <button name="action_sold" string="Vendue" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('sale_or_rent', '!=', 'sale'),('state', '!=', 'offer_accepted')]}"/>
+                            <!-- <button name="action_sold" string="Vendue" type="object" class="oe_highlight" states="offer_accepted" /> -->
+                            <!-- <button name="action_sold" string="Vendue" type="object" class="btn-secondary" states="new, offer_received" /> -->
+
+                            <!-- <button name="action_rent" string="Louée" type="object" class="btn-secondary" states="new, offer_received" attrs="{'invisible': ['|', ('sale_or_rent', '!=', 'rent'),('state', '!=', 'offer_accepted')]}" /> -->
+                            <!-- <button name="action_rent" string="Louée" type="object" class="btn-secondary" states="new, offer_received" /> -->
+                            <button name="action_rent" string="Louée" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('sale_or_rent', '!=', 'rent'),('state', '!=', 'offer_accepted')]}"/>
+                            <!-- <button name="action_rent" string="Louée" type="object" class="oe_highlight" states="offer_accepted" /> -->
+                        
                         <button name="action_cancel" string="Annuler" type="object" class="btn-secondary" states="new,offer_received,offer_accepted" />
                     </header>                
                     <sheet>
                     <!-- champs du formulaire -->
-                        <h1><field name="name"/></h1>
+                        <h1><field name="name" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/></h1>
                         <group>
-                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                            <field name="sale_or_rent" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                        
                         </group>
                         <group col="2">
                             <group>
@@ -42,12 +51,17 @@
                                     <field name="region" placeholder="Région" class="o_address_city" />
                                     <field name="postcode" placeholder="Code postal" class="o_address_zip" />
                                 </div>                              
-                                <field name="property_type_id" widget="many2one" options="{'no_create': True, 'no_edit': True}"/>
-                                <field name="date_availability"/>
+                                <field name="property_type_id" widget="many2one" options="{'no_create': True, 'no_edit': True}" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                <field name="date_availability" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
                             </group>
                             <group>
-                                <field name="expected_price"/>
-                                <field name="selling_price"/>
+                            <!-- vente -->
+                                <field name="expected_price" attrs="{'invisible': [('sale_or_rent', '!=', 'sale')],'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                <field name="selling_price" attrs="{'invisible': [('sale_or_rent', '!=', 'sale')]}"/>
+                            <!-- location -->
+                                <field name="rent_price" attrs="{'invisible': [('sale_or_rent', '!=', 'rent')],'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                <field name="rental_duration" attrs="{'invisible': [('sale_or_rent', '!=', 'rent')],'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                <field name="total_rent_price" attrs="{'invisible': [('sale_or_rent', '!=', 'rent')]}"/>
                                 <field name="best_price"/>
                                 
                             </group>
@@ -56,17 +70,17 @@
                             <page string="Description">
                                 <group col="2">
                                     <group>
-                                        <field name="description"/>
-                                        <field name="bedrooms"/>
-                                        <field name="living_area"/>
-                                        <field name="facades"/>
-                                        <field name="garage"/>
+                                        <field name="description" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                        <field name="bedrooms" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                        <field name="living_area" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                        <field name="facades" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                        <field name="garage" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
                                         <!-- <field name="active"/> -->
                                     </group>
                                     <group>
-                                        <field name="garden"/>
-                                        <field name="garden_area" attrs="{'invisible': [('garden', '=', False)]}"/>
-                                        <field name="garden_orientation" attrs="{'invisible': [('garden', '=', False)]}"/>
+                                        <field name="garden" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                        <field name="garden_area" attrs="{'invisible': [('garden', '=', False)],'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                        <field name="garden_orientation" attrs="{'invisible': [('garden', '=', False)],'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
                                         <field name="total_area"/>
                                     </group>
                                 </group>
@@ -74,13 +88,13 @@
                             </page>
                             <page string="Offres" > 
                                 <tree>
-                                    <field name="offer_ids" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled'))]}"/>
+                                    <field name="offer_ids" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
                                 </tree>
                             </page>
                             <page string="Autres infos">
                                 <group>
-                                    <field name="salesman_id"/>
-                                    <field name="buyer"/>
+                                    <field name="salesman_id" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
+                                    <field name="buyer" attrs="{'readonly': [('state', 'in', ('offer_accepted', 'sold', 'cancelled','rented'))]}"/>
                                     <field name="attachment_ids" widget="many2many_binary"/>
                                 </group>
                             </page>
@@ -97,16 +111,18 @@
                 <!-- <tree string="Liste" decoration-success="state=='offer_received'"  decoration-bold-green="state == 'offer_accepted'" decoration-muted="state == 'sold'"> -->
                     <field name="name"/>
                     <field name="property_type_id" widget="many2one" options="{'no_create': True, 'no_edit': True}"/>
-                    <field name="postcode"/>
+                    <!-- <field name="postcode"/> -->
                     <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                     <field name="bedrooms"/>
                     <field name="living_area"/>
                     <field name="expected_price"/>
                     <field name="selling_price"/>
+                    <field name="total_rent_price"/>
                     <field name="date_availability" optional="hide"/>
                     <field name="buyer" optional="hide"/>
                     <field name="salesman_id" optional="hide"/>
                     <field name="state" optional="hide"/>
+                    <field name="sale_or_rent" optional="hide"/>
                 </tree>
             </field>
         </record> 

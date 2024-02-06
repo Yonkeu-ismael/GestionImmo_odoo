@@ -58,9 +58,15 @@ class Offer(models.Model):
         self.status = 'accepted'
         self.property_id.write({
                     'buyer': self.partner_id.id,
-                    'selling_price': self.price, 
+                    # 'selling_price': self.price, 
                     'state': 'offer_accepted'               
                 })
+        if self.property_id.sale_or_rent == 'sale':
+            self.property_id.write({
+                'selling_price': self.price
+            })
+
+        
     def reject_offer(self):
         self.status = 'refused'
     #Ajout des contraintes sur les champs, les montant doivent être positif

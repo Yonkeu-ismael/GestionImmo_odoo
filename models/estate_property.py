@@ -31,12 +31,18 @@ class Estate(models.Model):
                    ('Far North', 'Extrême-Nord'), 
                    ('West', 'Ouest')])
     attachment_ids = fields.Many2many('ir.attachment', string='Pièces jointes')
-    
+    sale_or_rent = fields.Selection([
+        ('sale', 'En vente'),
+        ('rent', 'En location')
+    ], string='Statut', default='sale',required=True, copy=False)
+    rent_price = fields.Float('Prix de location (par mois)')
+    rental_duration = fields.Integer('Durée de location (en mois)' ,default="12")
+    total_rent_price = fields.Float('Prix total de location' , compute='_compute_total_rent_price', store=True,readonly=True)
     #La date de disponibilité par défaut est  dans 3 mois
     #La date de disponibilité ne doit pas être copié lors de la duplication d'un enregistrement
     date_availability = fields.Date('Date de disponibilité', 
                                     default=lambda self: (datetime.today() + timedelta(days=90)).strftime('%Y-%m-%d'),copy=False)
-    expected_price = fields.Float('Prix attendu',required=True)
+    expected_price = fields.Float('Prix attendu')
     #Le prix de vente ne doit pas être copié lors de la duplication d'un enregistrement et est en lecture seul
     selling_price = fields.Float('Prix de vente',copy=False,readonly=True)
     bedrooms = fields.Integer('Chambres',default=2)
@@ -54,17 +60,33 @@ class Estate(models.Model):
         ('offer_received', 'Offre reçue'),
         ('offer_accepted', 'Offre acceptée'),
         ('sold', 'Vendue'),
+        ('rented', 'Louée'),
         ('cancelled', 'Annulée'),
     ], string='Etat', tracking=True, default='new',required=True, copy=False)
     property_type_id = fields.Many2one("estate_property_type", string="Type propriété")
     salesman_id = fields.Many2one('res.users', string='Vendeur', index=True, default=lambda self: self.env.user.id)
     buyer = fields.Many2one('res.partner', string='Achéteur', index=True, default=lambda self: self.env.company.partner_id.id)
-    tag_ids = fields.Many2many("estate_property_tag" , string="Etiquette" )
+    tag_ids = fields.Many2many("estate_property_tag" , string="Tag" )
     offer_ids = fields.One2many("estate_property_offer" , "property_id",ondelete="cascade", string="Offre")
     total_area = fields.Float('Superficie totale', compute='_compute_total_area', store=True, help="La superficie totale est la somme de la Surface du jardin(m2) et la Surface habitable(m2) ")
     best_price = fields.Float('Meilleur offre', compute='_compute_best_price',readonly=True, store=True)
     show_reset_to_draft_button = fields.Boolean(compute='_compute_show_reset_to_draft_button')
 
+# bloc location
+    @api.depends('rent_price','rental_duration')
+    def _compute_total_rent_price(self):
+        for record in self:
+            record.total_rent_price = record.rent_price * record.rental_duration
+    @api.onchange('rent_price','rental_duration')
+    def _onchange_area(self):
+        self.total_rent_price = self.rent_price * self.rental_duration 
+    is_rented = fields.Boolean('Loué', default=False)
+    def action_rent(self):
+        if self.is_cancelled or self.is_sold:
+            raise exceptions.UserError("Une propriété annulée ou vendue ne peut pas être louée !")
+        self.state = 'rented'
+    #fin
+    
     @api.depends('living_area','garden_area')
     def _compute_total_area(self):
         for record in self:
@@ -110,13 +132,13 @@ class Estate(models.Model):
     is_cancelled = fields.Boolean('Annulé', default=False)
 
     def action_cancel(self):
-        if self.is_sold:
-            raise exceptions.UserError("Une propriété vendue ne peut pas être annulée !!!")
+        if self.is_sold or self.is_rented:
+            raise exceptions.UserError("Une propriété vendue ou louée ne peut pas être annulée !!!")
         # self.is_cancelled = True
         self.state = 'cancelled'
     def action_sold(self):
-        if self.is_cancelled:
-            raise exceptions.UserError("Une propriété annulée ne peut pas être vendue !!!")
+        if self.is_cancelled or self.is_rented:
+            raise exceptions.UserError("Une propriété annulée ou louée ne peut pas être vendue !!!")
         # self.is_sold = True
         self.state = 'sold'
 #Ajout des contraintes sur les champs, les montant doivent être positif

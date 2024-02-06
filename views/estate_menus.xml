@@ -5,11 +5,14 @@ Create from 25/01/2024 -->
 
 <odoo>
     <data>
-        <menuitem id="estate_property_menu_root" name="Immobilier" sequence="5"/>
-        <!-- menu Publicité -->
+        <menuitem id="estate_property_menu_root" 
+        name="Immobilier"
+        web_icon="estate,static/description/icon.png" 
+        sequence="5"/>
+        <!-- menu Propriété -->
         <menuitem 
             id="estate_property_first_level_menu" 
-            name="Publicité" 
+            name="Propriété" 
             parent="estate_property_menu_root" 
             sequence="1"/>
         <menuitem 
@@ -17,10 +20,10 @@ Create from 25/01/2024 -->
             action="estate_property_action" 
             parent="estate_property_first_level_menu" 
             sequence="1"/>
-        <!--Fin menu Publicité -->
+        <!--Fin menu Setting -->
         <!-- menu Setting -->
         <menuitem id="property_type_first_level_menu" 
-            name="Setting" 
+            name="Paramètre" 
             parent="estate_property_menu_root"  
             sequence="2"/>
 

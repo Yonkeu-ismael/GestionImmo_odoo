@@ -21,6 +21,7 @@
         'views/estate_property_views.xml',
         'views/inherited_res_users_view.xml',
         'views/estate_menus.xml',
+        # 'data/cron.xml',
 
 
     ],

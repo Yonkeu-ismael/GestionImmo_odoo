@@ -34,7 +34,14 @@
                         </group>
                         <group col="2">
                             <group>
-                                <field name="postcode"/>
+                                <label for="street" string="Adresse" modifiers="{}"/>
+                                <div class="o_address_format" >
+                                    <field name="street" placeholder="Rue..." class="o_address_street"/>
+                                    <field name="neighborhood" placeholder="Quartier..." class="o_address_street" />
+                                    <field name="city" placeholder="Ville" class="o_address_city" />
+                                    <field name="region" placeholder="Région" class="o_address_city" />
+                                    <field name="postcode" placeholder="Code postal" class="o_address_zip" />
+                                </div>                              
                                 <field name="property_type_id" widget="many2one" options="{'no_create': True, 'no_edit': True}"/>
                                 <field name="date_availability"/>
                             </group>
@@ -74,6 +81,7 @@
                                 <group>
                                     <field name="salesman_id"/>
                                     <field name="buyer"/>
+                                    <field name="attachment_ids" widget="many2many_binary"/>
                                 </group>
                             </page>
                         </notebook>

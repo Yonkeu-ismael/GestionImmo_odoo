@@ -14,7 +14,24 @@ class Estate(models.Model):
 
     name = fields.Char('Titre', required=True, translate=True)
     description = fields.Text('Description', translate=True)
-    postcode = fields.Char('Code postal', required=True, translate=True)
+    postcode = fields.Char('Code postal', translate=True)
+    street  = fields.Char('Rue', translate=True)
+    city  = fields.Char('Ville', translate=True)
+    neighborhood  = fields.Char('Quartier', translate=True)
+    region = fields.Selection( 
+        string='Région',
+        selection=[('North', 'Nord'), 
+                   ('South', 'Sud'), 
+                   ('South-West', 'Sud-Ouest'), 
+                   ('East', 'Est'), 
+                   ('Adamawa', 'Adamaoua'), 
+                   ('Centre', 'Centre'), 
+                   ('Littoral', 'Littoral'), 
+                   ('North-West', 'Nord-Ouest'), 
+                   ('Far North', 'Extrême-Nord'), 
+                   ('West', 'Ouest')])
+    attachment_ids = fields.Many2many('ir.attachment', string='Pièces jointes')
+    
     #La date de disponibilité par défaut est  dans 3 mois
     #La date de disponibilité ne doit pas être copié lors de la duplication d'un enregistrement
     date_availability = fields.Date('Date de disponibilité', 

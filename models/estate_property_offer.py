@@ -88,6 +88,11 @@ class Offer(models.Model):
         
         return super(Offer, self).create(vals)
     
+    @api.model
+    def _cron_cancel_expired_offers(self):
+        expired_offers = self.search([('date_deadline', '<=', fields.Date.today()), ('status', '!=', 'accepted')])
+        expired_offers.reject_offer()
+
     # @api.constrains('price')
     # def _check_price(self):
     #     for offer in self:
